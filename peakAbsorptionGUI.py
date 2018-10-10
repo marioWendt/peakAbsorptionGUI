@@ -8,7 +8,7 @@ import pickle
 import simulator
 import time
 import math
-from PyTango import *
+import tango
 
 class ViewData(QtGui.QMainWindow):
 	def __init__(self, parent=None):
@@ -57,9 +57,9 @@ class ViewData(QtGui.QMainWindow):
 		mx='p02/motor/elab.01'#x_motor
 		my='p02/motor/elab.02'#y_motor
 		gr='p02/register/elab.out08'#io_register
-		self.gripper=DeviceProxy(gr)
-                self.motox=DeviceProxy(mx)
-		self.motoy=DeviceProxy(my)
+		self.gripper=tango.DeviceProxy(gr)
+                self.motox=tango.DeviceProxy(mx)
+		self.motoy=tango.DeviceProxy(my)
 		self.yBacklash=3.0#backlash
 		self.amount=5#amount_of_beamstops
 		self.imv.setImage(arr)
@@ -172,18 +172,18 @@ class ViewData(QtGui.QMainWindow):
 		#str1='p02/motor/eh1a.16'
 		self.gripper.value=0
 		self.motox.position=0
-		while(self.motox.state() == DevState.MOVING):
+		while(self.motox.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		self.motoy.position=0
-                while(self.motoy.state() == DevState.MOVING):
+                while(self.motoy.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		time.sleep(2)
 		self.gripper.value=1
 		self.motox.position=self.roiPos[0][0]
-		while(self.motoy.state() == DevState.MOVING):
+		while(self.motoy.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		self.motoy.position=400-self.roiPos[0][1]-self.yBacklash
-                while(self.motoy.state() == DevState.MOVING):
+                while(self.motoy.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		time.sleep(2)
 
@@ -192,32 +192,32 @@ class ViewData(QtGui.QMainWindow):
 		self.roiPosOld=self.roiPos
 		self.gripper.value=0
 		self.motox.position=0
-		while(self.motox.state() == DevState.MOVING):
+		while(self.motox.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		self.motoy.position=0
-                while(self.motoy.state() == DevState.MOVING):
+                while(self.motoy.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		for i in range (0, len(self.roiPos)):
 			self.gripper.value=1
 			time.sleep(2)
 			self.motox.position=self.roiPos[i][0]
-			while(self.motoy.state() == DevState.MOVING):
+			while(self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.motoy.position=400-self.roiPos[i][1]-self.yBacklash
-			while(self.motoy.state() == DevState.MOVING):
+			while(self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.gripper.value = 0
 			time.sleep(2)
 			self.motox.position=0
-			while(self.motox.state() == DevState.MOVING):
+			while(self.motox.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.motoy.position=0
-                	while(self.motoy.state() == DevState.MOVING):
+                	while(self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 
 	def move_bs(self, axis, position):
 		self.(axis).position=position
-			while(self.(axis).state() == DevState.MOVING):
+			while(self.(axis).state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 	
 
@@ -293,34 +293,34 @@ class ViewData(QtGui.QMainWindow):
 			self.gripper.value = 0
                 	self.motox.position = ch_list[i][0]
 			print ch_list[i][0]
-			while (self.motox.state() == DevState.MOVING):
+			while (self.motox.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.motoy.position = ch_list[i][1]
 			print ch_list[i][1]
-			while (self.motoy.state() == DevState.MOVING):
+			while (self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.gripper.value = 1
 			time.sleep(2)
 			self.motox.position = self.roiPos[i][0]
 			print self.roiPos[i][0]
-			while (self.motoy.state() == DevState.MOVING):
+			while (self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.motoy.position = 400 - self.roiPos[i][1]
 			print self.roiPos[i][1]
-			while (self.motoy.state() == DevState.MOVING):
+			while (self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			#self.motoy.position = 400 - self.roiPos[i][1] - self.yBacklash
-			#while (self.motoy.state() == DevState.MOVING):
+			#while (self.motoy.state() == tango.DevState.MOVING):
 			#	time.sleep(0.01)
 			self.gripper.value = 0
 			time.sleep(2)
 			print "x0"
 			self.motox.position = 0
-                	while (self.motox.state() == DevState.MOVING):
+                	while (self.motox.state() == tango.DevState.MOVING):
                     		time.sleep(0.01)
                 	self.motoy.position = 0
 			print "y0"
-                	while (self.motoy.state() == DevState.MOVING):
+                	while (self.motoy.state() == tango.DevState.MOVING):
                     		time.sleep(0.01)
 		self.roiPosOld=self.roiPos
 
@@ -341,25 +341,25 @@ class ViewData(QtGui.QMainWindow):
 		for i in range(0, len(self.roiPos)):
 			print "beamstop",bs_list[i][0]
                 	self.motox.position = bs_list[i][0]
-			while (self.motox.state() == DevState.MOVING):
+			while (self.motox.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.motoy.position = bs_list[i][1]
 			print bs_list[i][1]
-			while (self.motoy.state() == DevState.MOVING):
+			while (self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.gripper.value = 1
 			time.sleep(2)
 			self.motox.position = self.roiPos[i][0]
 			print self.roiPos[i][0]
-			while (self.motox.state() == DevState.MOVING):
+			while (self.motox.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			self.motoy.position = 400 - self.roiPos[i][1]
 			print self.roiPos[i][1]
-			while (self.motoy.state() == DevState.MOVING):
+			while (self.motoy.state() == tango.DevState.MOVING):
 				time.sleep(0.01)
 			#self.motoy.position = self.roiPos[i][1] - self.yBacklash
 			#print "backlash"
-			#while (self.motoy.state() == DevState.MOVING):
+			#while (self.motoy.state() == tango.DevState.MOVING):
 			#	time.sleep(0.01)
 			self.gripper.value = 0
 			time.sleep(2)
@@ -375,11 +375,11 @@ class ViewData(QtGui.QMainWindow):
 		self.motoy.slewrate=400
 		print 'calibrate motors ....'
 		self.motox.moveToCwLimit()
-		while(self.motox.state() == DevState.MOVING):
+		while(self.motox.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		self.motox.calibrate(0)
 		self.motoy.moveToCwLimit()
-		while(self.motox.state() == DevState.MOVING):
+		while(self.motox.state() == tango.DevState.MOVING):
 			time.sleep(0.01)
 		self.motoy.calibrate(0)
 		print "write back slew rate"
