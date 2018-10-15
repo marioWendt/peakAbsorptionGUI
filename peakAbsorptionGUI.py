@@ -15,21 +15,15 @@ class ViewData(QtGui.QMainWindow):
         self.widget = QtGui.QWidget()
         self.widget.setLayout(QtGui.QGridLayout())
 
-        # ni=Image.open('SYN_49a_piston_OK.tif')
         ni = Image.open('DAC4-00002MODD.png')  # default_image
         arr = np.array(ni)
         self.imv = pg.ImageView()
 
-        # imv2=pg.ViewBox()
-        # self.widget.addItem(imv2)
-
         button_new_target = QtGui.QPushButton("new target")
         button_new_target.clicked.connect(self.change)
-        # button_new_target.move(600,50)
 
         button_open_file = QtGui.QPushButton("open image")
         button_open_file.clicked.connect(self.open_file)
-        # button_open_file.move(600,100)
 
         button_write_to_file = QtGui.QPushButton("write to file")
         button_write_to_file.clicked.connect(self.write_data)
@@ -85,7 +79,6 @@ class ViewData(QtGui.QMainWindow):
         self.widget.layout().addWidget(button_calibrate, 6, 0)
         self.widget.layout().addWidget(button_re_arrange, 6, 1)
         self.widget.layout().addWidget(button_add_bs, 6, 2)
-        # self.widget.layout().addWidget(imv2,5,5,3,3)
         self.setCentralWidget(self.widget)
         self.show()
 
@@ -93,8 +86,6 @@ class ViewData(QtGui.QMainWindow):
         for x in range(0, len(self.roiAll)):
             # print "circle %i :" %x, self.roiAll[x].pos(), self.roiAll[x].size()
             print self.roiAll[x]
-            # pdb.set_trace()
-            # self.roiPos[x]=[self.roiAll[x].pos(),0]
             self.roiPos[x] = [self.roiAll[x].pos()[0], self.roiAll[x].pos()[1], 0]
             print self.roiPos[x]
             self.roiSize[x] = self.roiAll[x].size()
@@ -111,7 +102,6 @@ class ViewData(QtGui.QMainWindow):
         print self.roiPos
 
     def open_file(self):
-        # pdb.set_trace()
         file_handling = QtGui.QFileDialog()
         file_handling.setFileMode(QtGui.QFileDialog.AnyFile)
         if file_handling.exec_():
@@ -149,11 +139,6 @@ class ViewData(QtGui.QMainWindow):
         self.roiSize = data[2]
         print f_name
         print self.roiPos
-        # ni=Image.open(str(f_name))
-        # arr=np.array(ni)
-        # self.imv=pg.ImageView()
-        # self.imv.setImage(arr)
-        # self.widget.layout().addWidget(self.imv,0,0,3,3)
         for x in range(0, len(self.roiPos)):
             self.roiAll.append(
                 pg.CircleROI([self.roiPos[x][0], self.roiPos[x][1]], [self.roiSize[x][0], self.roiSize[x][1]],
@@ -163,11 +148,8 @@ class ViewData(QtGui.QMainWindow):
 
     def move_pellets(self):
         print 'movePellets'
-        # pdb.set_trace()
         print self.roiPos[0][0]
         print self.roiPos[0][1]
-        # print "circle %i :" %x, self.roiAll[0].pos(), self.roiAll[0].size()
-        # str1='p02/motor/eh1a.16'
         self.gripper.value = 0
         self.motox.position = 0
         self.wait_move(self.motox)
@@ -212,28 +194,20 @@ class ViewData(QtGui.QMainWindow):
         while self.axis.state() == tango.DevState.MOVING:
             time.sleep(0.01)
 
-
-    def test(self):
-        print self.roiPos
-
-
     def make_bs_list(self, amount):
         bs_list = []
         for i in range(0, amount):
             bs_list.append([0, 0 + i * 10])
         return bs_list
 
-
     def calc_ind(self, x):
         for i in range(0, len(x)):
             x[i][2] = math.sqrt(pow(x[i][0], 2) + pow(x[i][1], 2))
         return x
 
-
     def sort_ind(self, x, item_ind):
         x = sorted(x, key=lambda item: item[item_ind])
         return x
-
 
     def list_cmp(self, o_list, n_list):
         ind = []
@@ -244,22 +218,18 @@ class ViewData(QtGui.QMainWindow):
                 j = +1 #TODO: this just assigns 1 to j
         return ind
 
-
     def calc_alpha(self, xn, x0, yn, y0):
         alpha = 180 / math.pi * math.atan(float(yn - y0) / float(xn - x0))
         # alpha=math.atan(3/2)
         return alpha
 
-
     def calc_vec_len(self, xn, x0, yn, y0):
         length = math.sqrt(pow((xn - x0), 2) + pow((yn - y0), 2))
         return length
-
-
+    
     def calc_alpha_mod(self, alpha_i, alpha_j):
         alpha_mod = (alpha_j - alpha_i) / 2 + alpha_i
         return alpha_mod
-
 
     def add_bs(self):
         new_list = []
@@ -318,9 +288,7 @@ class ViewData(QtGui.QMainWindow):
             self.wait_move(self.motoy)
         self.roiPosOld = self.roiPos
 
-
     def move_all_new(self):
-        # pdb.set_trace()
         self.gripper.value = 0
         time.sleep(2)
         self.roiPosOld = self.roiPos
@@ -328,8 +296,6 @@ class ViewData(QtGui.QMainWindow):
         print self.roiPos
         self.roiPos = self.calc_ind(self.roiPos)
         self.roiPos = self.sort_ind(self.roiPos, 2)
-        # pdb.set_trace()
-
         for i in range(0, len(self.roiPos)):
             print "beamstop", bs_list[i][0]
             self.motox.position = bs_list[i][0]
@@ -355,7 +321,6 @@ class ViewData(QtGui.QMainWindow):
         self.motox.position = 0
         self.motoy.position = 0
         self.roi_pos_old = self.roiPos
-
 
     def calibrate(self):
         slew_buf_x = self.motox.slewrate
