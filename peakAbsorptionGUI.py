@@ -8,6 +8,13 @@ import time
 import math
 import tango
 
+mx = 'p02/motor/elab.01'  # x_motor
+my = 'p02/motor/elab.02'  # y_motor
+gr = 'p02/register/elab.out08'  # io_register
+self.yBacklash = 3.0  # backlash
+self.amount = 5  # amount_of_beamstops
+
+
 
 class ViewData(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -15,21 +22,15 @@ class ViewData(QtGui.QMainWindow):
         self.widget = QtGui.QWidget()
         self.widget.setLayout(QtGui.QGridLayout())
 
-        # ni=Image.open('SYN_49a_piston_OK.tif')
         ni = Image.open('DAC4-00002MODD.png')  # default_image
         arr = np.array(ni)
         self.imv = pg.ImageView()
 
-        # imv2=pg.ViewBox()
-        # self.widget.addItem(imv2)
-
         button_new_target = QtGui.QPushButton("new target")
         button_new_target.clicked.connect(self.change)
-        # button_new_target.move(600,50)
 
         button_open_file = QtGui.QPushButton("open image")
         button_open_file.clicked.connect(self.open_file)
-        # button_open_file.move(600,100)
 
         button_write_to_file = QtGui.QPushButton("write to file")
         button_write_to_file.clicked.connect(self.write_data)
@@ -85,7 +86,6 @@ class ViewData(QtGui.QMainWindow):
         self.widget.layout().addWidget(button_calibrate, 6, 0)
         self.widget.layout().addWidget(button_re_arrange, 6, 1)
         self.widget.layout().addWidget(button_add_bs, 6, 2)
-        # self.widget.layout().addWidget(imv2,5,5,3,3)
         self.setCentralWidget(self.widget)
         self.show()
 
@@ -93,7 +93,6 @@ class ViewData(QtGui.QMainWindow):
         for x in range(0, len(self.roiAll)):
             # print "circle %i :" %x, self.roiAll[x].pos(), self.roiAll[x].size()
             print self.roiAll[x]
-            # pdb.set_trace()
             # self.roiPos[x]=[self.roiAll[x].pos(),0]
             self.roiPos[x] = [self.roiAll[x].pos()[0], self.roiAll[x].pos()[1], 0]
             print self.roiPos[x]
@@ -111,7 +110,6 @@ class ViewData(QtGui.QMainWindow):
         print self.roiPos
 
     def open_file(self):
-        # pdb.set_trace()
         file_handling = QtGui.QFileDialog()
         file_handling.setFileMode(QtGui.QFileDialog.AnyFile)
         if file_handling.exec_():
@@ -149,11 +147,6 @@ class ViewData(QtGui.QMainWindow):
         self.roiSize = data[2]
         print f_name
         print self.roiPos
-        # ni=Image.open(str(f_name))
-        # arr=np.array(ni)
-        # self.imv=pg.ImageView()
-        # self.imv.setImage(arr)
-        # self.widget.layout().addWidget(self.imv,0,0,3,3)
         for x in range(0, len(self.roiPos)):
             self.roiAll.append(
                 pg.CircleROI([self.roiPos[x][0], self.roiPos[x][1]], [self.roiSize[x][0], self.roiSize[x][1]],
@@ -163,11 +156,9 @@ class ViewData(QtGui.QMainWindow):
 
     def move_pellets(self):
         print 'movePellets'
-        # pdb.set_trace()
         print self.roiPos[0][0]
         print self.roiPos[0][1]
         # print "circle %i :" %x, self.roiAll[0].pos(), self.roiAll[0].size()
-        # str1='p02/motor/eh1a.16'
         self.gripper.value = 0
         self.motox.position = 0
         self.wait_move(self.motox)
