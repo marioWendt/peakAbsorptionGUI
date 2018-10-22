@@ -6,14 +6,14 @@ from PIL import Image
 import pickle
 import time
 import math
-import tango
+#import tango
 
-mx = 'p02/motor/elab.01'  # x_motor
-my = 'p02/motor/elab.02'  # y_motor
-gr = 'p02/register/elab.out08'  # io_register
-self.yBacklash = 3.0  # backlash
-self.amount = 5  # amount_of_beamstops
-
+#mx = 'p02/motor/elab.01'  # x_motor
+#my = 'p02/motor/elab.02'  # y_motor
+#gr = 'p02/register/elab.out08'  # io_register
+#self.yBacklash = 3.0  # backlash
+#self.amount = 5  # amount_of_beamstops
+#self.bs_diam = 5
 
 
 class ViewData(QtGui.QMainWindow):
@@ -57,9 +57,10 @@ class ViewData(QtGui.QMainWindow):
         mx = 'p02/motor/elab.01'  # x_motor
         my = 'p02/motor/elab.02'  # y_motor
         gr = 'p02/register/elab.out08'  # io_register
-        self.gripper = tango.DeviceProxy(gr)
-        self.motox = tango.DeviceProxy(mx)
-        self.motoy = tango.DeviceProxy(my)
+        self.col = 1
+        #self.gripper = tango.DeviceProxy(gr)
+        #self.motox = tango.DeviceProxy(mx)
+        #self.motoy = tango.DeviceProxy(my)
         self.yBacklash = 3.0  # backlash
         self.amount = 5  # amount_of_beamstops
         self.imv.setImage(arr)
@@ -72,7 +73,7 @@ class ViewData(QtGui.QMainWindow):
 
         self.roiPos.append([80, 50, 0])  # first_roi_default_position
         self.roiSize.append([20, 20])  # first_roi_default_size
-        self.roiAll.append(pg.CircleROI([80, 50, 0], [20, 20], pen=(15, 15)))
+        self.roiAll.append(pg.CircleROI([80, 50, 0], [20, 20], pen=(self.col, 15)))
         self.roiAll[0].sigRegionChanged.connect(self.update)
         it1 = self.imv.addItem(self.roiAll[0])
 
@@ -99,7 +100,9 @@ class ViewData(QtGui.QMainWindow):
             self.roiSize[x] = self.roiAll[x].size()
 
     def change(self):
-        self.roiAll.append(pg.CircleROI([5, 5, 0], [20, 20], pen=(9, 15)))
+        self.col+=1
+        print self.col
+        self.roiAll.append(pg.CircleROI([5, 5, 0], [20, 20], pen=(self.col, 15)))
         self.roiAll[len(self.roiAll) - 1].sigRegionChanged.connect(self.update)
         self.imv.addItem(self.roiAll[len(self.roiAll) - 1])
         self.roiPos.append([5, 5, 0])
