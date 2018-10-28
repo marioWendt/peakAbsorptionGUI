@@ -20,7 +20,6 @@ class ViewData(QtGui.QMainWindow):
         arr = np.array(ni)
         self.imv = pg.ImageView()
 
-        # imv2=pg.ViewBox()
         # self.widget.addItem(imv2)
 
         button_new_target = QtGui.QPushButton("new target")
@@ -262,6 +261,7 @@ class ViewData(QtGui.QMainWindow):
 
 
     def add_bs(self):
+        pdb.set_trace()
         new_list = []
         buf_list = self.roiPos
         bs = [10, 10]
