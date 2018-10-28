@@ -6,6 +6,7 @@ from PIL import Image
 import pickle
 import time
 import math
+import pdb
 #import tango
 
 #mx = 'p02/motor/elab.01'  # x_motor
@@ -256,6 +257,8 @@ class ViewData(QtGui.QMainWindow):
 
 
     def add_bs(self):
+        QtCore.pyqtRemoveInputHook()
+        pdb.set_trace()
         new_list = []
         buf_list = self.roiPos
         bs = [10, 10]
@@ -265,8 +268,8 @@ class ViewData(QtGui.QMainWindow):
             buf_list[i][2] = self.calc_vec_len(buf_list[i][0], bs[0], buf_list[i][1], bs[1])
         target.append(buf_list[len(buf_list) - 1])
         target[0].append(0)
-        print buf_list
-        print target
+        print "buf_list",buf_list
+        print "target",target
         for i in range(0, len(buf_list)):
             if buf_list[i][2] < target[0][2]:
                 new_list.append(buf_list[i])
@@ -275,7 +278,7 @@ class ViewData(QtGui.QMainWindow):
             new_list[i].append(0)
             new_list[i][3] = new_list[0][2] * math.tan(
                 math.pi / 180 * self.calc_alpha(new_list[i][0], bs[0], new_list[i][1], bs[1]) - target[0][3])
-        print new_list
+        print "new_list",new_list
 
 
     def rearrange(self):
