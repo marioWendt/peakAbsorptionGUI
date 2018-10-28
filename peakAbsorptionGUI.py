@@ -27,6 +27,11 @@ class ViewData(QtGui.QMainWindow):
         arr = np.array(ni)
         self.imv = pg.ImageView()
 
+<<<<<<< HEAD
+=======
+        # self.widget.addItem(imv2)
+
+>>>>>>> 09c3ea02ba222e0f853b6715a594f8eed26f1cb7
         button_new_target = QtGui.QPushButton("new target")
         button_new_target.clicked.connect(self.change)
 
@@ -257,7 +262,10 @@ class ViewData(QtGui.QMainWindow):
 
 
     def add_bs(self):
+<<<<<<< HEAD
         QtCore.pyqtRemoveInputHook()
+=======
+>>>>>>> 09c3ea02ba222e0f853b6715a594f8eed26f1cb7
         pdb.set_trace()
         new_list = []
         buf_list = self.roiPos
