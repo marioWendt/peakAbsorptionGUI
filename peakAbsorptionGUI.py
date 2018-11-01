@@ -15,6 +15,7 @@ import pdb
 #self.yBacklash = 3.0  # backlash
 #self.amount = 5  # amount_of_beamstops
 #self.bs_diam = 5
+#self.dist = 15 #minimum distance between bs
 
 
 class ViewData(QtGui.QMainWindow):
@@ -27,11 +28,6 @@ class ViewData(QtGui.QMainWindow):
         arr = np.array(ni)
         self.imv = pg.ImageView()
 
-<<<<<<< HEAD
-=======
-        # self.widget.addItem(imv2)
-
->>>>>>> 09c3ea02ba222e0f853b6715a594f8eed26f1cb7
         button_new_target = QtGui.QPushButton("new target")
         button_new_target.clicked.connect(self.change)
 
@@ -58,7 +54,7 @@ class ViewData(QtGui.QMainWindow):
         button_re_arrange.clicked.connect(self.rearrange)
 
         button_add_bs = QtGui.QPushButton("add_bs")
-        button_add_bs.clicked.connect(self.add_bs)
+        button_add_bs.clicked.connect(self.test_find_path)
 
         mx = 'p02/motor/elab.01'  # x_motor
         my = 'p02/motor/elab.02'  # y_motor
@@ -262,11 +258,8 @@ class ViewData(QtGui.QMainWindow):
 
 
     def add_bs(self):
-<<<<<<< HEAD
-        QtCore.pyqtRemoveInputHook()
-=======
->>>>>>> 09c3ea02ba222e0f853b6715a594f8eed26f1cb7
-        pdb.set_trace()
+        #QtCore.pyqtRemoveInputHook()
+        #pdb.set_trace()
         new_list = []
         buf_list = self.roiPos
         bs = [10, 10]
@@ -287,6 +280,55 @@ class ViewData(QtGui.QMainWindow):
             new_list[i][3] = new_list[0][2] * math.tan(
                 math.pi / 180 * self.calc_alpha(new_list[i][0], bs[0], new_list[i][1], bs[1]) - target[0][3])
         print "new_list",new_list
+
+    def col_check(self,next_bs,used_bs,target):
+        #QtCore.pyqtRemoveInputHook() #for debugging
+        #pdb.set_trace() #for debugging
+        col_issues = [] #captures colliding beamstops in a list
+        vec_target=self.calc_vec_len(next_bs[0],target[0],next_bs[1],target[1]) #is needed later for comparison
+        for i in range(0, len(used_bs)):
+            next_vec=self.calc_vec_len(used_bs[i][0],next_bs[0],used_bs[i][1],next_bs[1])
+            if next_vec < vec_target:
+                alpha_target=self.calc_alpha(target[0],next_bs[0],target[1],next_bs[1])
+                alpha_next=self.calc_alpha(used_bs[i][0],next_bs[0],used_bs[i][1],next_bs[1])
+                alpha_check=alpha_next-alpha_target
+                pass_distance=next_vec*math.tan(math.pi/180*alpha_check)
+                if abs(pass_distance) < 15:
+                    used_bs[i][2]=next_vec
+                    col_issues.append(used_bs[i])
+
+        if len(col_issues) > 1:
+            col_issues=self.sort_ind(col_issues, 2)
+        #pdb.set_trace()
+        #if len(col_issues)>0: #this if block was just for testing the bypass function
+        #    bypass=self.calc_bypass(next_bs,col_issues,20)
+        return col_issues
+
+    def calc_bypass(self,next_bs,col_issues,dist):
+        alpha_next=self.calc_alpha(col_issues[0][0],next_bs[0],col_issues[0][1],next_bs[1])
+        new_x=dist*math.cos(90-(math.pi/180*alpha_next))+col_issues[0][0]
+        new_y=dist*math.sin(90-(math.pi/180*alpha_next))+col_issues[0][1]
+        newer_y=dist/math.sin(90-(math.pi/180*alpha_next))+col_issues[0][1]
+        return [0.001+col_issues[0][0],newer_y]# will be changed to [col_issues[0][0],newer_y] and newer_y will be renamed
+
+    def find_path(self,target,next_bs,used_bs,dist):#first try
+        QtCore.pyqtRemoveInputHook() #for debugging
+        pdb.set_trace() #for debugging
+        kascade=[]
+        kascade.append(target)
+        col_issues=[]
+        col_issues=self.col_check(next_bs,used_bs,target)
+        if len(col_issues) > 0:
+            while len(col_issues) > 0:
+                bypass=self.calc_bypass(next_bs,col_issues,dist)
+                kascade.append(bypass)
+                next_bs=bypass
+                col_issues=self.col_check(next_bs,used_bs,target)
+        print kascade
+        return kascade
+
+    def test_find_path(self):
+        kaskade=self.find_path([200,10],[10,10],self.roiPos,25)
 
 
     def rearrange(self):
